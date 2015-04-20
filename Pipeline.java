@@ -112,7 +112,7 @@ public class Pipeline
 					if (usedRegisters.get(instr.getDest()) == null)
 					{
 						usedRegisters.put(instr.getDest(), stage+1);
-						//System.out.println("PUSH " + instr.getDest());
+						System.out.println((stage+1) + " PUSH " + instr.getDest());
 					}
                 }
                 else
@@ -147,7 +147,7 @@ public class Pipeline
                 else if (usedRegisters.get(instr.getSrcTwo()) == null || usedRegisters.get(instr.getSrcTwo()) == stage)
                     matrix[3][stage] = registers.get(instr.getSrcTwo());
 				else	// Dependency
-					matrix[2][stage] = "Old " + instr.getSrcTwo(); //buffers[4].getRZ(); 
+					matrix[3][stage] = "Old " + instr.getSrcTwo(); //buffers[4].getRZ(); 
             }     
         }
         // -------------------------------
@@ -183,9 +183,10 @@ public class Pipeline
 				
                 // Assign value to first ALU input
                 if (usedRegisters.get(buff.getRA()) == null || usedRegisters.get(buff.getRA()) == stage ||
-                   (buff.getDest().equals(buff.getRA())))
+                   (buff.getDest().equals(buff.getRA()) && usedRegisters.get(buff.getRA()) > (stage-2)))
                 {
                     ra = Integer.parseInt(registers.get(buff.getRA()));  
+                    System.out.println((stage+1) + " " + ra);
 					//System.out.println("SUCCESS " + buff.getRA() + " " + usedRegisters.get (buff.getRA()));
 					//System.out.println("CURR VAL " + buff.getRA() + " " + registers.get (buff.getRA()));
                 }
@@ -205,7 +206,7 @@ public class Pipeline
                     rb = Integer.parseInt(buff.getRB().substring(1)); 
 				}					
                 else if (usedRegisters.get(buff.getRB()) == null || usedRegisters.get(buff.getRB()) == stage ||
-                        (buff.getDest().equals(buff.getRB())))
+                        (buff.getDest().equals(buff.getRB()) && usedRegisters.get(buff.getRB()) > (stage-2)))
                 {
                     rb = Integer.parseInt(registers.get(buff.getRB()));
                 }
