@@ -56,11 +56,12 @@ public class Pipeline
         if (instructions.size() == 0)
             return;
         
+        // Determines matrix for each stage
         for (int count = 0; count < 8; count++)
         {
 			flow(5, count);
                       
-            stages.add(copyArray());
+            stages.add(copyArray());                // Adds copy of current matrix to list for display
             allStageRegisters.add(getRegisters());	// Adds register values for current stage
         
             programCounter += 4;
@@ -70,6 +71,10 @@ public class Pipeline
     
     public void flow(int bufferStage, int stage) throws NullRegisterException
     {
+        // Dr. Boshart, if you're attempting to read thorough all of this code, I apologize in advance.
+        // It's a bit crazy. :)
+    
+    
         if (bufferStage < 0)
             return;
             
@@ -83,6 +88,8 @@ public class Pipeline
             buffers[0].setBuffer("", "", "", "", "", Integer.toString(programCounter), "", false);   
             matrix[0][stage] = Integer.toString(programCounter);
             
+            // Junk addresses are set when there are no more instructions but we still want the PC to increment and display
+            // Once this junk address is set, it will trickle down to every other buffer
             if (instrMap.get(Integer.toString(programCounter)) == null) 
                 buffers[0].setJunkAddress(true);
                 
@@ -107,12 +114,12 @@ public class Pipeline
                     instr = instrMap.get(pc_tmp);
                     buffers[1].setBuffer("", "", "", "", instr.getOpcode(), pc_tmp, "", false);  
                     matrix[1][stage] = instr.getOpcode();       
-                    //System.out.println("PUSH " + instr.getDest());
 					
 					if (usedRegisters.get(instr.getDest()) == null)
 					{
+                        // This register is a destination register
+                        // Others referencing this will have a dependency
 						usedRegisters.put(instr.getDest(), stage+1);
-						//System.out.println((stage+1) + " PUSH " + instr.getDest());
 					}
                 }
                 else
@@ -137,11 +144,13 @@ public class Pipeline
                 instr = instrMap.get(pc_tmp);
                 buffers[2].setBuffer(instr.getSrcOne(), instr.getSrcTwo(), "", "", instr.getOpcode(), pc_tmp, instr.getDest(), instr.isImmediate());
                 
+                // SrcOne Display
 				if (usedRegisters.get(instr.getSrcOne()) == null || usedRegisters.get(instr.getSrcOne()) == stage)
 					matrix[2][stage] = registers.get(instr.getSrcOne()); 
 				else	// Dependency
 					matrix[2][stage] = "Old " + instr.getSrcOne(); //buffers[4].getRZ(); 
                 
+                // SrcTwo Display
                 if (instr.isImmediate())
                     matrix[3][stage] = "Junk";
                 else if (usedRegisters.get(instr.getSrcTwo()) == null || usedRegisters.get(instr.getSrcTwo()) == stage)
@@ -169,8 +178,6 @@ public class Pipeline
                 int ra = 0;
                 int rb = 0;
                 
-				//System.out.println("ATTEMPTING " + buff.getRA() + " " + usedRegisters.get(buff.getRA()));
-				//System.out.println("ATTEMPTING " + buff.getRB() + " " + usedRegisters.get (buff.getRB()));
 				
 				// Throws exception if registers are null
 				if (registers.get(buff.getRA()) == null && usedRegisters.get(buff.getRA()) == null)
@@ -262,10 +269,12 @@ public class Pipeline
         else if (bufferStage == 5 && !buffers[4].getDest().equals(""))      // Copy to Destination Register
         {                  
             registers.put(buffers[4].getDest(), buffers[4].getRY());
+            // Set to null since the destination register is now set
             usedRegisters.put(buffers[4].getDest(), null);
         }
         // -------------------------------
     
+        // Check other buffers
         flow(bufferStage-1, stage);
     }
     
@@ -304,10 +313,6 @@ public class Pipeline
     public Object[][] copyArray()
     {   
         Object[][] arr = new Object[6][9];
-        
-        //for(int i=0; i<matrix.length; i++)
-         //   for(int j=0; j<matrix[i].length; j++)
-         //       arr[i][j]=matrix[i][j];
     
         arr[0][0] = "PC";
         arr[1][0] = "IR";
@@ -355,6 +360,7 @@ public class Pipeline
         
         }
             
+        // Sort array by register name ex: R1, R2, etc.
         Collections.sort(arr, new Comparator<String[]>() {
             @Override
             public int compare (String[] s1, String[] s2)

@@ -1,6 +1,6 @@
 R1 2000, R2 20, R3 677, R4 10, R5 123
 1000 Add R1, R2, #100
 1004 Subtract R5, R4, R3
-1008 Add R4, R2, R1
+1008 Or R4, R2, R1
 1012 Subtract R2, R3, #100
-1016 Add R1, R3, #50
+1016 And R1, R3, #50
