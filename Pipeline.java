@@ -182,7 +182,8 @@ public class Pipeline
 				
 				
                 // Assign value to first ALU input
-                if (usedRegisters.get(buff.getRA()) == null || usedRegisters.get(buff.getRA()) == stage)
+                if (usedRegisters.get(buff.getRA()) == null || usedRegisters.get(buff.getRA()) == stage ||
+                   (buff.getDest().equals(buff.getRA())))
                 {
                     ra = Integer.parseInt(registers.get(buff.getRA()));  
 					//System.out.println("SUCCESS " + buff.getRA() + " " + usedRegisters.get (buff.getRA()));
@@ -203,7 +204,8 @@ public class Pipeline
 				{
                     rb = Integer.parseInt(buff.getRB().substring(1)); 
 				}					
-                else if (usedRegisters.get(buff.getRB()) == null || usedRegisters.get(buff.getRB()) == stage)
+                else if (usedRegisters.get(buff.getRB()) == null || usedRegisters.get(buff.getRB()) == stage ||
+                        (buff.getDest().equals(buff.getRB())))
                 {
                     rb = Integer.parseInt(registers.get(buff.getRB()));
                 }
