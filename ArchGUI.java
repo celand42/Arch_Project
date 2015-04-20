@@ -8,15 +8,24 @@ public class ArchGUI extends JPanel implements ActionListener
 {
     private JTable table;
     private JLabel currStage;
+    private JLabel currRegisters;
+    private JLabel currInstr;
 	private JButton nextStage = new JButton("Next Stage");
     private JButton prevStage = new JButton("Previous Stage");
     private ArrayList<Object[][]> stages;
+    private ArrayList<Instruction> instructions;
+    private ArrayList<ArrayList<String[]>> allRegisters;
     private int currentStage;
 	
-	public ArchGUI(ArrayList<Object[][]> s)        // the frame constructor
+	public ArchGUI(ArrayList<Object[][]> s, ArrayList<Instruction> i, ArrayList<ArrayList<String[]>> r)        // the frame constructor
 	{
 		super(new FlowLayout(FlowLayout.LEFT));
-		stages = s;
+		//super(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        //setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        
+        stages = s;
+        instructions = i;
+        allRegisters = r;
         
 		JFrame frame = new JFrame("Architecture Pipelining");
 		frame.setBounds(100, 100, 720, 480);
@@ -40,14 +49,27 @@ public class ArchGUI extends JPanel implements ActionListener
             {"RZ", "-", "-", "-", "-", "-", "-", "-", "-"},
             {"RY", "-", "-", "-", "-", "-", "-", "-", "-"}};
 		
-		currentStage = 1;
-        currStage = new JLabel("Stage " + currentStage + ":", SwingConstants.RIGHT);
-        
+        currentStage = 1;
+		
+        currStage = new JLabel("Stage " + currentStage + ":", SwingConstants.RIGHT);        
         currStage.setFont (currStage.getFont().deriveFont (16.0f));
+        
+        currRegisters = new JLabel("");        
+        currRegisters.setFont (currStage.getFont().deriveFont (16.0f));
+        
+        String instrStr = "<html><body>";
+        
+        for (int count = 0; count < instructions.size(); count++)
+            instrStr += instructions.get(count).toString() + "<br>";
+            
+        instrStr += "</body></html>";
+        
+        currInstr = new JLabel(instrStr);        
+        currInstr.setFont (currStage.getFont().deriveFont (12.0f));
+        
 		table = new JTable(data, columnNames);
         updateTable();
-        //table.getModel().setValueAt("TEST", 3, 3);
-        //
+
 		table.setShowGrid(false);
 		table.setPreferredScrollableViewportSize(new Dimension(690,150));
         table.getTableHeader().setReorderingAllowed(false);
@@ -76,7 +98,8 @@ public class ArchGUI extends JPanel implements ActionListener
 		add(currStage);
 		add(scrollPane);
 		add(prevStage);
-        add(nextStage);        
+        add(nextStage);   
+        add(currInstr);
 		frame.setVisible(true); // make frame visible
         
         
@@ -101,7 +124,7 @@ public class ArchGUI extends JPanel implements ActionListener
         {
             if (currentStage > 1)
             {                
-                currentStage--;
+                currentStage--;              
                 currStage.setText("Stage " + currentStage + ":");
                 updateTable();
             }
@@ -113,20 +136,19 @@ public class ArchGUI extends JPanel implements ActionListener
         TableModel model = table.getModel();
         Object[][] newStage = new Object[6][9];
         
-        //System.out.println(stages.get(0)[1][2]);
-        //table.getModel().setValueAt("TEST", 3, 3);
+        
+    
+    
+    
+    
     
         for (int x = 0; x < 6; x++)
         {
             for (int y = 1; y < 9; y++)
             {
                 model.setValueAt(stages.get(currentStage-1)[x][y], x, y);
-                //arr[x][y]=matrix[x][y-1];
             }
         } 
-    
-    
-    
     
     }
 

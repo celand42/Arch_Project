@@ -1,14 +1,21 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Collections;
+import java.util.Comparator;
+
 
 public class Pipeline
 {
-	private Object[][] matrix;
-	private ArrayList<Instruction> instructions;
-    private HashMap<String, String> registers;
-    private HashMap<String, Instruction> instrMap;
-    private InterstageBuffer[] buffers;
-    private ArrayList<Object[][]> stages;
+	private Object[][] matrix;                                  // Stores values for pipeline
+	private ArrayList<Instruction> instructions;                // List of instructions
+    private HashMap<String, String> registers;                  // Map of registers and their values
+    private HashMap<String, Instruction> instrMap;              // Map of addresses and their instructions
+    private HashMap<String, Integer> usedRegisters;             // Map of current destination registers (used for data deps) 
+    private InterstageBuffer[] buffers;                         // Interstage buffers
+    private ArrayList<Object[][]> stages;                       // Contains every pipeline stage
+    private ArrayList<ArrayList<String[]>> allStageRegisters;   // Contains register values for every stage 
     
     private String PC, IR, RA, RB, RZ, RY;
     private int programCounter;
@@ -26,18 +33,18 @@ public class Pipeline
                 matrix[x][y] = "-";
             }
         } 
-        
-        //printMatrix();
-        
+                
 		instructions = i;
         registers = m;
         instrMap = im;
+        usedRegisters = new HashMap<String, Integer>();
         buffers = new InterstageBuffer[5];
         
         for (int count = 0; count < 5; count++)
             buffers[count] = new InterstageBuffer();
         
         stages = new ArrayList<Object[][]>();
+        allStageRegisters = new ArrayList<ArrayList<String[]>>();
         RA = RB = RY = RZ = IR = PC = "";
         programCounter = Integer.parseInt(instructions.get(0).getPC());
         endOfInstr = false;
@@ -45,6 +52,8 @@ public class Pipeline
         printInstructions();
         
         calculateStages();
+        
+        //getRegisters();
         
         
 	}
@@ -63,8 +72,8 @@ public class Pipeline
             
             
             stages.add(copyArray());
-            
-            
+            allStageRegisters.add(getRegisters());
+            //getRegisters();
             
             /*
             System.out.println("BUFFERS FOR STAGE " + (count+1));
@@ -84,9 +93,9 @@ public class Pipeline
             */
         
             programCounter += 4;
-        }        
+        }
+        
 
-        System.out.println(registers.get("R2"));
     }
     
     
@@ -118,7 +127,6 @@ public class Pipeline
             {
                 buffers[1].setBuffer("", "", "", "", "", buffers[0].getPC_Temp(), "", false);   
                 buffers[1].setJunkAddress(true);
-                //System.out.println("JUNK");
             }
             
             else if (!buffers[0].getPC_Temp().equals(""))
@@ -129,7 +137,9 @@ public class Pipeline
                 {             
                     instr = instrMap.get(pc_tmp);
                     buffers[1].setBuffer("", "", "", "", instr.getOpcode(), pc_tmp, "", false);  
-                    matrix[1][stage] = instr.getOpcode();                    
+                    matrix[1][stage] = instr.getOpcode();       
+                    System.out.println("USED " + instr.getDest());
+                    usedRegisters.put(instr.getDest(), stage+1);
                 }
                 else
                     buffers[1].setBuffer("", "", "", "", "", pc_tmp, "", false);  
@@ -159,7 +169,7 @@ public class Pipeline
                 if (instr.isImmediate())
                     matrix[3][stage] = "Junk";
                 else
-                    matrix[3][stage] = instr.getSrcTwo(); 
+                    matrix[3][stage] = registers.get(instr.getSrcTwo());
             }     
         }
         // -------------------------------
@@ -176,34 +186,36 @@ public class Pipeline
             else if (!buffers[2].getIR().equals(""))
             {
                 // NEED TO ADD SUPPORT FOR DATA DEPS
-                //pc_tmp = buffers[2].getPC_Temp();
-                //instr = instrMap.get(pc_tmp);
+
                 buff = buffers[2];
                 int alu = 0;
+                int ra = 0;
+                int rb = 0;
+                
+                // Assign value to first ALU input
+                if (usedRegisters.get(buff.getRA()) == null || usedRegisters.get(buff.getRA()) == stage)
+                {
+                    ra = Integer.parseInt(registers.get(buff.getRA()));  
+                }
+                
+
+                // Assign value to second ALU input
+                if (buff.isImmediate())
+                    rb = Integer.parseInt(buff.getRB().substring(1));
+                
+                else if (usedRegisters.get(buff.getRB()) == null || usedRegisters.get(buff.getRA()) == stage)
+                {
+                    rb = Integer.parseInt(registers.get(buff.getRB()));
+                }
+                
                 
                 if (buff.getIR().equals("Add"))
                 {
-                    int ra = Integer.parseInt(registers.get(buff.getRA()));
-                    int rb;
-                    
-                    if (!buff.isImmediate())
-                        rb = Integer.parseInt(registers.get(buff.getRB()));
-                    else
-                        rb = Integer.parseInt(buff.getRB().substring(1));   // Removes # 
-                
                     alu =  ra + rb;
                 }
                 
                 else if (buff.getIR().equals("Subtract"))
                 {
-                    int ra = Integer.parseInt(registers.get(buff.getRA()));
-                    int rb;
-                    
-                    if (!buff.isImmediate())
-                        rb = Integer.parseInt(registers.get(buff.getRB()));
-                    else
-                        rb = Integer.parseInt(buff.getRB().substring(1));   // Removes # 
-                
                     alu =  ra - rb;
                 }
                 
@@ -216,7 +228,6 @@ public class Pipeline
                 {
                 
                 }
-                
                 
                 buffers[3].setBuffer(buff.getRA(), buff.getRB(), "", Integer.toString(alu), buff.getIR(), buff.getPC_Temp(), buff.getDest(), buff.isImmediate()); 
                 
@@ -246,9 +257,10 @@ public class Pipeline
         // -------------------------------
         
         // COPY BUFFER TO REGISTER
-        else if (bufferStage == 5 && !buffers[4].getDest().equals(""))      // Copy to RY
+        else if (bufferStage == 5 && !buffers[4].getDest().equals(""))      // Copy to Destination Register
         {                  
             registers.put(buffers[4].getDest(), buffers[4].getRY());
+            usedRegisters.put(buffers[4].getDest(), null);
         }
         // -------------------------------
     
@@ -329,6 +341,47 @@ public class Pipeline
     public ArrayList<Object[][]> getStages()
     {
         return stages;
+    }
+    
+    public ArrayList<Instruction> getInstructions()
+    {
+        return instructions;    
+    }
+    
+    public ArrayList<String[]> getRegisters()
+    {
+        ArrayList<String[]> arr = new ArrayList<String[]>();
+        String[] reg;
+        
+        Iterator it = registers.entrySet().iterator();
+        
+        while (it.hasNext())
+        {
+            reg = new String[2];
+            Map.Entry pair = (Map.Entry)it.next();
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
+            reg[0] = pair.getKey().toString();
+            reg[1] = pair.getValue().toString();
+            arr.add(reg);     
+        
+        }
+        
+        
+        Collections.sort(arr, new Comparator<String[]>() {
+            @Override
+            public int compare (String[] s1, String[] s2)
+            {
+                //System.out.println(s1[0] + " AND " + s2[0]);
+                return s1[0].compareTo(s2[0]);
+            }
+        });
+        
+        return arr;
+    }
+    
+    public ArrayList<ArrayList<String[]>> getAllRegisters()
+    {
+        return allStageRegisters;
     }
     
 }

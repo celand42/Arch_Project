@@ -32,7 +32,7 @@ public class ArchProject
         try
         {
             pipe = readFile(fileName);
-            new ArchGUI(pipe.getStages());
+            new ArchGUI(pipe.getStages(), pipe.getInstructions(), pipe.getAllRegisters());
         }
         catch (Exception e)
         {

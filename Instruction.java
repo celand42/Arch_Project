@@ -28,6 +28,19 @@ public class Instruction
     
     }
     
+    public String toString()
+    {
+        String str = "";
+        
+        str += getPC() + " ";
+        str += getOpcode() + " ";
+        str += getDest() + ", ";
+        str += getSrcOne() + ", ";
+        str += getSrcTwo();    
+        
+        return str;
+    }
+    
     // PC
 	public String getPC()
 	{
