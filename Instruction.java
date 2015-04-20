@@ -6,12 +6,11 @@ public class Instruction
 	private String SrcOne;
 	private String SrcTwo;
 	private boolean Immediate;
-	private boolean ShortInstr;
 	
 	public Instruction()
 	{
 		PC = Opcode = Dest = SrcOne = SrcTwo = "";
-		Immediate = ShortInstr = false;
+		Immediate = false;
 	}
 	
     public void printInstr()
@@ -20,12 +19,8 @@ public class Instruction
 			System.out.print(getOpcode() + " ");
 			System.out.print(getDest() + ", ");
 			System.out.print(getSrcOne());
-			
-			if (!isShortInstr())
-				System.out.print(", " + getSrcTwo());
-			
+            System.out.print(", " + getSrcTwo());		
 			System.out.println();
-    
     }
     
     public String toString()
@@ -106,20 +101,7 @@ public class Instruction
 	{
 		Immediate =  b;
 	}
-	
-	// ShortInstr
-	public boolean isShortInstr()
-	{
-		return ShortInstr;
-	}
-	
-	public void setShortInstr(boolean b)
-	{
-		ShortInstr =  b;
-	}
-	
-	
-	
+		
 	
 	
 }

@@ -104,43 +104,20 @@ public class ArchProject
             instr.setOpcode(lineArr[1]);
             instr.setDest(lineArr[2]);
             instr.setSrcOne(lineArr[3]);
-            
-            if (lineArr.length > 4)
+            instr.setSrcTwo(lineArr[4]);
+         
+            if (lineArr[4].charAt(0) == '#')
             {
-                instr.setSrcTwo(lineArr[4]);
-                instr.setShortInstr(false);
-                
-                if (lineArr[4].charAt(0) == '#')
-                {
-                    //System.out.println("YUS " + lineArr[3]);
-                    instr.setImmediate(true);
-                }	
-                else
-                {
-                    //System.out.println("NAW " + lineArr[3]);
-                    instr.setImmediate(false);
-                }	
-            }
-            
+                instr.setImmediate(true);
+            }	
             else
             {
-                instr.setShortInstr(true);
-                
-                if (lineArr[3].charAt(0) == '#')
-                {
-                    //System.out.println("YUS " + lineArr[2]);
-                    instr.setImmediate(true);
-                }	
-                else
-                {
-                    //System.out.println("NAW " + lineArr[2]);
-                    instr.setImmediate(false);
-                }	
-            }
+                instr.setImmediate(false);
+            }	
             
+                        
             instructions.add(instr);
             instrMap.put(instr.getPC(), instr);
-            //System.out.println(instrMap.get(instr.getPC()).getPC());
         }   
     
         return new Pipeline(instructions, map, instrMap);

@@ -292,9 +292,7 @@ public class Pipeline
 			System.out.print(instructions.get(count).getOpcode() + " ");
 			System.out.print(instructions.get(count).getDest() + ", ");
 			System.out.print(instructions.get(count).getSrcOne());
-			
-			if (!instructions.get(count).isShortInstr())
-				System.out.print(", " + instructions.get(count).getSrcTwo());
+            System.out.print(", " + instructions.get(count).getSrcTwo());
 			
 			System.out.println();
 			
