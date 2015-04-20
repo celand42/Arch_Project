@@ -19,7 +19,7 @@ public class ArchGUI extends JPanel implements ActionListener
 	
 	public ArchGUI(ArrayList<Object[][]> s, ArrayList<Instruction> i, ArrayList<ArrayList<String[]>> r)        // the frame constructor
 	{
-		super(new FlowLayout(FlowLayout.LEFT));
+		super(new FlowLayout(FlowLayout.LEFT, 25, 10));
 		//super(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         //setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         
@@ -28,7 +28,7 @@ public class ArchGUI extends JPanel implements ActionListener
         allRegisters = r;
         
 		JFrame frame = new JFrame("Architecture Pipelining");
-		frame.setBounds(100, 100, 720, 480);
+		frame.setBounds(100, 100, 750, 400);
 		
 	
 		String[] columnNames = {"",
@@ -54,8 +54,7 @@ public class ArchGUI extends JPanel implements ActionListener
         currStage = new JLabel("Stage " + currentStage + ":", SwingConstants.RIGHT);        
         currStage.setFont (currStage.getFont().deriveFont (16.0f));
         
-        currRegisters = new JLabel("");        
-        currRegisters.setFont (currStage.getFont().deriveFont (16.0f));
+        
         
         String instrStr = "<html><body>";
         
@@ -66,6 +65,9 @@ public class ArchGUI extends JPanel implements ActionListener
         
         currInstr = new JLabel(instrStr);        
         currInstr.setFont (currStage.getFont().deriveFont (12.0f));
+        
+        currRegisters = new JLabel("");        
+        currRegisters.setFont (currStage.getFont().deriveFont (12.0f));
         
 		table = new JTable(data, columnNames);
         updateTable();
@@ -97,9 +99,10 @@ public class ArchGUI extends JPanel implements ActionListener
 		//pressme.setBounds(50,50,50,50);
 		add(currStage);
 		add(scrollPane);
-		add(prevStage);
-        add(nextStage);   
         add(currInstr);
+        add(currRegisters);
+		add(prevStage);
+        add(nextStage);          
 		frame.setVisible(true); // make frame visible
         
         
@@ -136,11 +139,16 @@ public class ArchGUI extends JPanel implements ActionListener
         TableModel model = table.getModel();
         Object[][] newStage = new Object[6][9];
         
+        String str = "<html><body>";
         
+        for (int count = 0; count < allRegisters.get(0).size(); count++)
+        {
+            str += allRegisters.get(currentStage-1).get(count)[0] + ": " + allRegisters.get(currentStage-1).get(count)[1] + "<br>";
+        }
     
+        str += "</body></html>";
     
-    
-    
+        currRegisters.setText(str);
     
         for (int x = 0; x < 6; x++)
         {
