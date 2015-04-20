@@ -1,3 +1,4 @@
-Add R2, R3, #100
-Subtract R5, R4, R3
-Load R2, R3
+R1 2000, R2 20, R3 677, R4 10
+1000 Add R2, R3, #100
+1004 Subtract R5, R4, R3
+1008 And R4, R3, #0xA3

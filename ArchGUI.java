@@ -1,15 +1,18 @@
 import java.awt.*; 
 import java.awt.event.*; 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class ArchGUI extends JPanel
 {
 	private JButton pressme = new JButton("Press Me");
+    private ArrayList<Object[][]> stages;
 	
-	public ArchGUI()        // the frame constructor
+	public ArchGUI(ArrayList<Object[][]> s)        // the frame constructor
 	{
 		//super(new GridBagLayout());
-		
+		stages = s;
+        
 		JFrame frame = new JFrame("Architecture Pipelining");
 		frame.setBounds(100, 100, 600, 400);
 		
@@ -32,12 +35,24 @@ public class ArchGUI extends JPanel
 		{"RZ", "-", "-", "-", "-", "-", "-", "-", "-"},
 		{"RY", "-", "-", "-", "-", "-", "-", "-", "-"},
         };
+        
+        Object[][] data2 = {
+        {"PC", "-", "-", "HELLO", "-", "-", "-", "-", "-"},
+        {"IR", "-", "-", "-", "-", "-", "-", "-", "-"},
+		{"RA", "-", "-", "-", "-", "-", "-", "-", "-"},
+		{"RB", "-", "-", "-", "-", "-", "-", "-", "-"},
+		{"RZ", "-", "-", "-", "-", "-", "-", "-", "-"},
+		{"RY", "-", "-", "-", "-", "-", "-", "-", "-"},
+        };
 		
 		//setLayout(new BorderLayout());
 		
-		final JTable table = new JTable(data, columnNames);
+		 JTable table = new JTable(data, columnNames);
+        //table.getModel().setValueAt("TEST", 3, 3);
+        //table = new JTable(data2, columnNames);
 		table.setShowGrid(false);
 		table.setPreferredScrollableViewportSize(new Dimension(575,150));
+        table.getTableHeader().setReorderingAllowed(false);
 		//table.setFillsViewportHeight(true);
 		table.setRowHeight(25);
 		table.setEnabled(false);

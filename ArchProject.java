@@ -3,18 +3,17 @@ import java.io.FileReader;
 import java.io.File;
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ArchProject
 {
 	
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
-		String fileName;
-		BufferedReader br;
-		String line;
-		String[] lineArr;
-		ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+		String fileName;		
+		
+		ArrayList<Instruction> instructions;
 		Pipeline pipe;
 		
 		// Attempts to read in file at command line
@@ -30,97 +29,119 @@ public class ArchProject
 			fileName = input.next();
 		}
 
-		// Attempts to open connection to file
-		try
-		{
-			File file = new File(fileName);
-			br = new BufferedReader(new FileReader(file));
-		}
+        try
+        {
+            pipe = readFile(fileName);
+            new ArchGUI(pipe.getStages());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            return;
+        }
+        
+        //if (instructions == null)
+        //    return;
 		
-		catch (Exception e)
-		{
-			System.out.println("Invalid file name.");
-			return;
-		}
-		
-		
-		Instruction instr;
-		
-        // Iterates through file
-		while ((line = br.readLine()) != null) 
-		{
-            //System.out.println(line);
-			
-			lineArr = line.split("(?<!,) |,");
-			
-			for (int count = 0; count < lineArr.length; count++)
-			{
-				lineArr[count] = lineArr[count].replaceAll("\\s+","");
-				//System.out.println(lineArr[count]);
-			}
-			
-			instr = new Instruction();
-			
-			instr.setOpcode(lineArr[0]);
-			instr.setDest(lineArr[1]);
-			instr.setSrcOne(lineArr[2]);
-			
-			if (lineArr.length > 3)
-			{
-				instr.setSrcTwo(lineArr[3]);
-				instr.setShortInstr(false);
-				
-				if (lineArr[3].charAt(0) == '#')
-				{
-					//System.out.println("YUS " + lineArr[3]);
-					instr.setImmediate(true);
-				}	
-				else
-				{
-					//System.out.println("NAW " + lineArr[3]);
-					instr.setImmediate(false);
-				}	
-			}
-			
-			else
-			{
-				instr.setShortInstr(true);
-				
-				if (lineArr[2].charAt(0) == '#')
-				{
-					//System.out.println("YUS " + lineArr[2]);
-					instr.setImmediate(true);
-				}	
-				else
-				{
-					//System.out.println("NAW " + lineArr[2]);
-					instr.setImmediate(false);
-				}	
-			}
-			
-			instructions.add(instr);
-        }   
-		
-		pipe = new Pipeline(instructions);
-		pipe.printInstructions();
-		
-		new ArchGUI();
+		//pipe = new Pipeline(instructions);
+		//pipe.printInstructions();
 		
 		
-		
-		
-		
-		
-		
+	
 		System.out.println("End");
-		
-		
-		
-		
-		
-	
-	
+
 	}
+    
+    /*
+    * Reads file and creates list of instructions
+    */
+    public static Pipeline readFile(String fileName) throws Exception
+    {
+        BufferedReader br;
+        String line;
+        String[] lineArr;
+        ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+        HashMap<String,String> map = new HashMap<String, String>();
+        HashMap<String,Instruction> instrMap = new HashMap<String, Instruction>();
+        
+        // Attempts to open connection to file
+        File file = new File(fileName);
+        br = new BufferedReader(new FileReader(file));
+       
+        line = br.readLine();
+        lineArr = line.split("(?<!,) |,");
+       
+        for (int count = 0; count < lineArr.length; count+=2)
+        {
+            lineArr[count] = lineArr[count].replaceAll("\\s+","");  // Remove whitespace
+            
+            map.put(lineArr[count], lineArr[count+1]);
+            //System.out.println(map.get(lineArr[count]));       
+        }
+       
+        Instruction instr;
+        
+        // Iterates through file
+        while ((line = br.readLine()) != null) 
+        {
+            //System.out.println(line);
+            
+            lineArr = line.split("(?<!,) |,");
+            
+            for (int count = 0; count < lineArr.length; count++)
+            {
+                lineArr[count] = lineArr[count].replaceAll("\\s+","");
+                //System.out.println(lineArr[count]);
+            }
+            
+            instr = new Instruction();
+            
+            instr.setPC(lineArr[0]);
+            instr.setOpcode(lineArr[1]);
+            instr.setDest(lineArr[2]);
+            instr.setSrcOne(lineArr[3]);
+            
+            if (lineArr.length > 4)
+            {
+                instr.setSrcTwo(lineArr[4]);
+                instr.setShortInstr(false);
+                
+                if (lineArr[4].charAt(0) == '#')
+                {
+                    //System.out.println("YUS " + lineArr[3]);
+                    instr.setImmediate(true);
+                }	
+                else
+                {
+                    //System.out.println("NAW " + lineArr[3]);
+                    instr.setImmediate(false);
+                }	
+            }
+            
+            else
+            {
+                instr.setShortInstr(true);
+                
+                if (lineArr[3].charAt(0) == '#')
+                {
+                    //System.out.println("YUS " + lineArr[2]);
+                    instr.setImmediate(true);
+                }	
+                else
+                {
+                    //System.out.println("NAW " + lineArr[2]);
+                    instr.setImmediate(false);
+                }	
+            }
+            
+            instructions.add(instr);
+            instrMap.put(instr.getPC(), instr);
+            //System.out.println(instrMap.get(instr.getPC()).getPC());
+        }   
+    
+        return new Pipeline(instructions, map, instrMap);
+    
+    }
 
 
 

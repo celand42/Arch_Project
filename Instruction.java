@@ -1,5 +1,6 @@
 public class Instruction
 {
+    private String PC;
 	private String Opcode;
 	private String Dest;
 	private String SrcOne;
@@ -9,10 +10,35 @@ public class Instruction
 	
 	public Instruction()
 	{
-		Opcode = Dest = SrcOne = SrcTwo = "";
+		PC = Opcode = Dest = SrcOne = SrcTwo = "";
 		Immediate = ShortInstr = false;
 	}
 	
+    public void printInstr()
+    {
+            System.out.print(getPC() + " ");
+			System.out.print(getOpcode() + " ");
+			System.out.print(getDest() + ", ");
+			System.out.print(getSrcOne());
+			
+			if (!isShortInstr())
+				System.out.print(", " + getSrcTwo());
+			
+			System.out.println();
+    
+    }
+    
+    // PC
+	public String getPC()
+	{
+		return PC;
+	}
+	
+	public void setPC(String val)
+	{
+		PC =  val;
+	}
+    
 	// Opcode
 	public String getOpcode()
 	{
