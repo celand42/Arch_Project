@@ -94,7 +94,7 @@ public class ArchGUI extends JPanel implements ActionListener
 		nextStage.setPreferredSize(new Dimension(150,50));
         nextStage.setFocusPainted(false);
         nextStage.setFont(nextStage.getFont().deriveFont (14.0f));
-		//pressme.setBounds(50,50,50,50);
+
 		add(currStage);
 		add(scrollPane);
         add(currInstr);

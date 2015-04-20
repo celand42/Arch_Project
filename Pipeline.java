@@ -112,7 +112,7 @@ public class Pipeline
 					if (usedRegisters.get(instr.getDest()) == null)
 					{
 						usedRegisters.put(instr.getDest(), stage+1);
-						System.out.println((stage+1) + " PUSH " + instr.getDest());
+						//System.out.println((stage+1) + " PUSH " + instr.getDest());
 					}
                 }
                 else
@@ -163,7 +163,6 @@ public class Pipeline
         
             else if (!buffers[2].getIR().equals(""))
             {
-                // NEED TO ADD SUPPORT FOR DATA DEPS
 
                 buff = buffers[2];
                 int alu = 0;
@@ -186,18 +185,12 @@ public class Pipeline
                    (buff.getDest().equals(buff.getRA()) && usedRegisters.get(buff.getRA()) > (stage-2)))
                 {
                     ra = Integer.parseInt(registers.get(buff.getRA()));  
-                    System.out.println((stage+1) + " " + ra);
-					//System.out.println("SUCCESS " + buff.getRA() + " " + usedRegisters.get (buff.getRA()));
-					//System.out.println("CURR VAL " + buff.getRA() + " " + registers.get (buff.getRA()));
                 }
 				else
 				{
 					// DEPENDENCY
 					// Operand forwarding
-					ra = Integer.parseInt(buffers[4].getRZ());
-					System.out.println(ra);
-					//throw new NullRegisterException(buff.getRA() + " has a data dependency.");
-					
+					ra = Integer.parseInt(buffers[4].getRZ());					
 				}
                 
                 // Assign value to second ALU input
@@ -213,22 +206,18 @@ public class Pipeline
 				else
 				{
 					//DEPENDENCY
-					//throw new NullRegisterException(buff.getRB() + " has a data dependency.");
 					// Operand forwarding
 					rb = Integer.parseInt(buffers[4].getRZ());
-					System.out.println(rb);
 				}
                 
                 // ALU Instructions
                 if (buff.getIR().equals("Add"))
                 {
-					//System.out.println((stage+1) + ": ADD PRECOMPUTE: " + buff.getRA() + ": " + registers.get(buff.getRA()) + "  " + buff.getRB() + ": " + registers.get(buff.getRB()));
                     alu =  ra + rb;
                 }
                 
                 else if (buff.getIR().equals("Subtract"))
                 {
-					//System.out.println((stage+1) + ": SUB PRECOMPUTE: " + buff.getRA() + ": " + registers.get(buff.getRA()) + "  " + buff.getRB() + ": " + registers.get(buff.getRB()));
                     alu =  ra - rb;
                 }
                 
@@ -274,8 +263,6 @@ public class Pipeline
         {                  
             registers.put(buffers[4].getDest(), buffers[4].getRY());
             usedRegisters.put(buffers[4].getDest(), null);
-			//System.out.println((stage+1) + ": POP: " + buffers[4].getDest());
-			//System.out.println("NEW VAL: " + registers.get(buffers[4].getDest()));
         }
         // -------------------------------
     

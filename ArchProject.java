@@ -39,14 +39,7 @@ public class ArchProject
             System.out.println(e.getMessage());
             return;
         }
-        
-        //if (instructions == null)
-        //    return;
-		
-		//pipe = new Pipeline(instructions);
-		//pipe.printInstructions();
-		
-		
+        	
 	
 		System.out.println("End");
 
@@ -61,7 +54,7 @@ public class ArchProject
         String line;
         String[] lineArr;
         ArrayList<Instruction> instructions = new ArrayList<Instruction>();
-        HashMap<String,String> map = new HashMap<String, String>();
+        HashMap<String,String> regValues = new HashMap<String, String>();
         HashMap<String,Instruction> instrMap = new HashMap<String, Instruction>();
         
         // Attempts to open connection to file
@@ -75,8 +68,8 @@ public class ArchProject
         {
             lineArr[count] = lineArr[count].replaceAll("\\s+","");  // Remove whitespace
             
-            map.put(lineArr[count], lineArr[count+1]);
-            //System.out.println(map.get(lineArr[count]));       
+            regValues.put(lineArr[count], lineArr[count+1]);
+            //System.out.println(regValues.get(lineArr[count]));       
         }
        
         Instruction instr;
@@ -120,7 +113,7 @@ public class ArchProject
             instrMap.put(instr.getPC(), instr);
         }   
     
-        return new Pipeline(instructions, map, instrMap);
+        return new Pipeline(instructions, regValues, instrMap);
     
     }
 
