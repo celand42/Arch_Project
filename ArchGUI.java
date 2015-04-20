@@ -2,19 +2,24 @@ import java.awt.*;
 import java.awt.event.*; 
 import javax.swing.*;
 import java.util.ArrayList;
+import javax.swing.table.*;
 
-public class ArchGUI extends JPanel
+public class ArchGUI extends JPanel implements ActionListener
 {
-	private JButton pressme = new JButton("Press Me");
+    private JTable table;
+    private JLabel currStage;
+	private JButton nextStage = new JButton("Next Stage");
+    private JButton prevStage = new JButton("Previous Stage");
     private ArrayList<Object[][]> stages;
+    private int currentStage;
 	
 	public ArchGUI(ArrayList<Object[][]> s)        // the frame constructor
 	{
-		//super(new GridBagLayout());
+		super(new FlowLayout(FlowLayout.LEFT));
 		stages = s;
         
 		JFrame frame = new JFrame("Architecture Pipelining");
-		frame.setBounds(100, 100, 600, 400);
+		frame.setBounds(100, 100, 720, 480);
 		
 	
 		String[] columnNames = {"",
@@ -27,31 +32,24 @@ public class ArchGUI extends JPanel
                                 "7",
                                 "8"};
  
-        Object[][] data = {
-        {"PC", "-", "-", "-", "-", "-", "-", "-", "-"},
-        {"IR", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RA", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RB", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RZ", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RY", "-", "-", "-", "-", "-", "-", "-", "-"},
-        };
+        Object[][] data = { 
+            {"PC", "-", "-", "-", "-", "-", "-", "-", "-"},
+            {"IR", "-", "-", "-", "-", "-", "-", "-", "-"},
+            {"RA", "-", "-", "-", "-", "-", "-", "-", "-"},
+            {"RB", "-", "-", "-", "-", "-", "-", "-", "-"},
+            {"RZ", "-", "-", "-", "-", "-", "-", "-", "-"},
+            {"RY", "-", "-", "-", "-", "-", "-", "-", "-"}};
+		
+		currentStage = 1;
+        currStage = new JLabel("Stage " + currentStage + ":", SwingConstants.RIGHT);
         
-        Object[][] data2 = {
-        {"PC", "-", "-", "HELLO", "-", "-", "-", "-", "-"},
-        {"IR", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RA", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RB", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RZ", "-", "-", "-", "-", "-", "-", "-", "-"},
-		{"RY", "-", "-", "-", "-", "-", "-", "-", "-"},
-        };
-		
-		//setLayout(new BorderLayout());
-		
-		 JTable table = new JTable(data, columnNames);
+        currStage.setFont (currStage.getFont().deriveFont (16.0f));
+		table = new JTable(data, columnNames);
+        updateTable();
         //table.getModel().setValueAt("TEST", 3, 3);
-        //table = new JTable(data2, columnNames);
+        //
 		table.setShowGrid(false);
-		table.setPreferredScrollableViewportSize(new Dimension(575,150));
+		table.setPreferredScrollableViewportSize(new Dimension(690,150));
         table.getTableHeader().setReorderingAllowed(false);
 		//table.setFillsViewportHeight(true);
 		table.setRowHeight(25);
@@ -62,14 +60,75 @@ public class ArchGUI extends JPanel
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Container con = frame.getContentPane(); // inherit main frame
 		con.add(this);    // JPanel containers default to FlowLayout
-		pressme.setMnemonic('P'); // associate hotkey to button
-		pressme.setPreferredSize(new Dimension(100,100));
+        
+        prevStage.setActionCommand("Prev"); // associate hotkey to button
+        prevStage.addActionListener(this);
+		prevStage.setPreferredSize(new Dimension(150,50));
+        prevStage.setFocusPainted(false);
+        prevStage.setFont(prevStage.getFont().deriveFont (14.0f));
+        
+		nextStage.setActionCommand("Next"); // associate hotkey to button
+        nextStage.addActionListener(this);
+		nextStage.setPreferredSize(new Dimension(150,50));
+        nextStage.setFocusPainted(false);
+        nextStage.setFont(nextStage.getFont().deriveFont (14.0f));
 		//pressme.setBounds(50,50,50,50);
-		
+		add(currStage);
 		add(scrollPane);
-		add(pressme); pressme.requestFocus();
+		add(prevStage);
+        add(nextStage);        
 		frame.setVisible(true); // make frame visible
+        
+        
 	}
+    
+    public void actionPerformed(ActionEvent ae) 
+    {
+        if (ae.getActionCommand().equals("Next"))
+        {
+            if (currentStage < 8)
+            {                
+                currentStage++;
+                currStage.setText("Stage " + currentStage + ":");
+                updateTable();
+                
+                
+                
+            }
+        }
+        
+        else if (ae.getActionCommand().equals("Prev"))
+        {
+            if (currentStage > 1)
+            {                
+                currentStage--;
+                currStage.setText("Stage " + currentStage + ":");
+                updateTable();
+            }
+        }
+    }
+    
+    public void updateTable()
+    {
+        TableModel model = table.getModel();
+        Object[][] newStage = new Object[6][9];
+        
+        //System.out.println(stages.get(0)[1][2]);
+        //table.getModel().setValueAt("TEST", 3, 3);
+    
+        for (int x = 0; x < 6; x++)
+        {
+            for (int y = 1; y < 9; y++)
+            {
+                model.setValueAt(stages.get(currentStage-1)[x][y], x, y);
+                //arr[x][y]=matrix[x][y-1];
+            }
+        } 
+    
+    
+    
+    
+    }
 
 
 

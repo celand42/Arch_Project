@@ -154,7 +154,7 @@ public class Pipeline
                 instr = instrMap.get(pc_tmp);
                 buffers[2].setBuffer(instr.getSrcOne(), instr.getSrcTwo(), "", "", instr.getOpcode(), pc_tmp, instr.getDest(), instr.isImmediate());
                 
-                matrix[2][stage] = instr.getSrcOne() + ": " + registers.get(instr.getSrcOne()); 
+                matrix[2][stage] = registers.get(instr.getSrcOne()); 
                 
                 if (instr.isImmediate())
                     matrix[3][stage] = "Junk";
@@ -291,11 +291,26 @@ public class Pipeline
     
     public Object[][] copyArray()
     {   
-        Object[][] arr = new Object[6][8];
+        Object[][] arr = new Object[6][9];
         
-        for(int i=0; i<matrix.length; i++)
-            for(int j=0; j<matrix[i].length; j++)
-                arr[i][j]=matrix[i][j];
+        //for(int i=0; i<matrix.length; i++)
+         //   for(int j=0; j<matrix[i].length; j++)
+         //       arr[i][j]=matrix[i][j];
+    
+        arr[0][0] = "PC";
+        arr[1][0] = "IR";
+        arr[2][0] = "RA";
+        arr[3][0] = "RB";
+        arr[4][0] = "RZ";
+        arr[5][0] = "RY";
+    
+        for (int x = 0; x < 6; x++)
+        {
+            for (int y = 1; y < 9; y++)
+            {
+                arr[x][y]=matrix[x][y-1];
+            }
+        } 
     
     /*for (int x = 0; x < 6; x++)
         {
