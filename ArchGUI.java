@@ -28,6 +28,7 @@ public class ArchGUI extends JPanel implements ActionListener
         allRegisters = r;
         
 		JFrame frame = new JFrame("Architecture Pipelining");
+		frame.setIconImage(new ImageIcon("pipe.png").getImage());
 		frame.setBounds(100, 100, 750, 400);
 		
 	
@@ -75,12 +76,9 @@ public class ArchGUI extends JPanel implements ActionListener
 		table.setShowGrid(false);
 		table.setPreferredScrollableViewportSize(new Dimension(690,150));
         table.getTableHeader().setReorderingAllowed(false);
-		//table.setFillsViewportHeight(true);
 		table.setRowHeight(25);
 		table.setEnabled(false);
 		JScrollPane scrollPane = new JScrollPane(table);
-		//scrollPane.setViewportBorder(null);
-		//scrollPane.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Container con = frame.getContentPane(); // inherit main frame
 		con.add(this);    // JPanel containers default to FlowLayout
@@ -116,10 +114,7 @@ public class ArchGUI extends JPanel implements ActionListener
             {                
                 currentStage++;
                 currStage.setText("Stage " + currentStage + ":");
-                updateTable();
-                
-                
-                
+                updateTable();     
             }
         }
         

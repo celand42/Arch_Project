@@ -85,9 +85,13 @@ public class ArchProject
         while ((line = br.readLine()) != null) 
         {
             //System.out.println(line);
-            
+			line.trim();
+		    
+			if (line.isEmpty())
+				continue;
+		   
             lineArr = line.split("(?<!,) |,");
-            
+			
             for (int count = 0; count < lineArr.length; count++)
             {
                 lineArr[count] = lineArr[count].replaceAll("\\s+","");
